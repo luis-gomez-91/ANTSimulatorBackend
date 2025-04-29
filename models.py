@@ -24,6 +24,8 @@ class LicenceType(Base):
     name = Column(String, index=True)
     description = Column(String)
     image = Column(String)
+    order = Column(Integer)
+    enable = Column(Boolean, default=False)
     questions = relationship("Question", back_populates="licence_type")
 
     type_id = Column(Integer, ForeignKey("types.id"))

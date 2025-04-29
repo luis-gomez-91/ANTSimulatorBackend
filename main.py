@@ -1,9 +1,9 @@
 from fastapi import FastAPI, Depends, HTTPException, UploadFile, File, Form, Query
 from pydantic import BaseModel, ValidationError
 import models
-from models import Question, Choice, LicenceType, QuestionType
+from models import Question, Choice, LicenceType, QuestionType, Type
 from database import engine, SessionLocal
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from typing import List, Annotated, Optional
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, ForeignKey, Boolean
@@ -197,20 +197,39 @@ async def fetchQuestionNum(data: LicenciaRequest, db: db_dependency):
 @app.get("/licences/")
 async def get_licences(db: db_dependency):
     try:
-        # Obtener todas las preguntas
-        licencias = db.query(LicenceType).all()
+        # Obtener todos los tipos que tengan licencias habilitadas
+        tipos = (
+            db.query(Type)
+            .join(LicenceType)
+            .filter(LicenceType.enable == True)
+            .options(joinedload(Type.licences))  # optimiza la carga
+            .distinct()
+            .all()
+        )
 
-        response =  [
-            {
-                'id': x.id,
-                'name': x.name,
-                'description': x.description,
-                'image': x.image
-            } for x in licencias
-        ]
+        response = []
+        for tipo in tipos:
+            licencias_filtradas = sorted(
+                [lic for lic in tipo.licences if lic.enable],
+                key=lambda x: x.order
+            )
+            response.append({
+                "type_id": tipo.id,
+                "type_name": tipo.name,
+                "licences": [
+                    {
+                        "id": lic.id,
+                        "name": lic.name,
+                        "description": lic.description,
+                        "image": lic.image,
+                        "order": lic.order,
+                        "version_id": lic.version_id
+                    } for lic in licencias_filtradas
+                ]
+            })
 
         return response
-    
+
     except Exception as e:
         print(f"ERROR: {e}")
         raise HTTPException(status_code=500, detail=str(e))
