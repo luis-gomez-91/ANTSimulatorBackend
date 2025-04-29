@@ -193,3 +193,24 @@ async def fetchQuestionNum(data: LicenciaRequest, db: db_dependency):
 
     return {"num": last_question[0]}
 
+
+@app.get("/licences/")
+async def get_licences(db: db_dependency):
+    try:
+        # Obtener todas las preguntas
+        licencias = db.query(LicenceType).all()
+
+        response =  [
+            {
+                'id': x.id,
+                'name': x.name,
+                'description': x.description,
+                'image': x.image
+            } for x in licencias
+        ]
+
+        return response
+    
+    except Exception as e:
+        print(f"ERROR: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
