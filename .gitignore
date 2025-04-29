@@ -1,0 +1,7 @@
+.env
+CLOUDINARY_CLOUD_NAME='dzrxvg49m'
+CLOUDINARY_API_KEY='197886943293869'
+CLOUDINARY_API_SECRET='Lqoel0qHanAH9INstvzen1qEZoI'
+DATABASE_URL=postgresql://ant_nf5j_user:Uu2c5w5a5sKp39IpiYjIJyid3nOPV4zf@dpg-d07vrus9c44c73bcjak0-a.oregon-postgres.render.com/ant_nf5j
+
+entorno virtual = /env

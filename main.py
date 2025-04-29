@@ -12,9 +12,19 @@ import os
 from fastapi.middleware.cors import CORSMiddleware
 import json
 from fastapi.staticfiles import StaticFiles
-
+from dotenv import load_dotenv
+import cloudinary
+import cloudinary.uploader
 
 app = FastAPI()
+
+load_dotenv()
+cloudinary.config(
+    cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME'),
+    api_key=os.getenv('CLOUDINARY_API_KEY'),
+    api_secret=os.getenv('CLOUDINARY_API_SECRET'),
+    secure=True
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -45,6 +55,11 @@ def root():
     return "Hola papi"
 
 
+from fastapi import UploadFile, File, Form, HTTPException
+import os
+import json
+import cloudinary.uploader  # Asegúrate de importar el uploader
+
 @app.post("/question/")
 async def create_question(
     db: db_dependency,
@@ -52,29 +67,33 @@ async def create_question(
     num: int = Form(...),
     licence_type_id: int = Form(...),
     question_type_id: int = Form(...),
-    choices: str = Form(...),  # <<< va como string en form-data
+    choices: str = Form(...),
     image: UploadFile = File(None),
 ):
     try:
-        image_path = None
+        image_url = None
 
-        # Guardar imagen si viene
+        # Subir imagen a Cloudinary si viene
         if image:
-            file_path = os.path.join(UPLOAD_DIR, image.filename)
             contents = await image.read()
-            with open(file_path, "wb") as f:
-                f.write(contents)
-            image_path = file_path
 
-        # choices llega como string, así que lo parseamos
-        choices_list = json.loads(choices)  # convierte el string en una lista de dicts
+            # Cloudinary requiere un archivo tipo bytes, lo que tenemos en 'contents'
+            upload_result = cloudinary.uploader.upload(contents, resource_type="image")
+
+            # Obtener la URL de la imagen subida
+            image_url = upload_result.get("secure_url")
+            if not image_url:
+                raise Exception("No se pudo subir la imagen a Cloudinary")
+
+        # Parsear choices
+        choices_list = json.loads(choices)
 
         db_question = Question(
             text=text,
             num=num,
             licence_type_id=licence_type_id,
             question_type_id=question_type_id,
-            image=image_path,  # Aquí guarda la ruta de la imagen
+            image=image_url,  # Ahora guarda la URL pública de Cloudinary
         )
 
         db_choices = []
@@ -82,7 +101,7 @@ async def create_question(
             db_choice = Choice(
                 text=choice["text"],
                 is_correct=choice["is_correct"],
-                image=None
+                image=None  # Aquí también podrías subir imagen de choice si quieres
             )
             db_choices.append(db_choice)
 
@@ -96,6 +115,7 @@ async def create_question(
     except Exception as e:
         print(f"ERROR: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
     
 @app.get("/questions/")
 async def get_questions(db: db_dependency, id_licencia: int):
