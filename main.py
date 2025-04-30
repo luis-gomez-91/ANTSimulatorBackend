@@ -234,3 +234,43 @@ async def get_licences(db: db_dependency):
     except Exception as e:
         print(f"ERROR: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/questions_only/")
+async def get_questions(db: db_dependency, id_licencia: int):
+    try:
+        # questions = db.query(Question).filter(Question.licence_type_id == id_licencia)
+        questions = (
+            db.query(Question)
+            .options(
+                joinedload(Question.licence_type),
+                joinedload(Question.question_type),
+                joinedload(Question.choices)
+            )
+            .filter(Question.licence_type_id == id_licencia)
+            .all()
+        )
+
+        result = []
+        for question in questions.all():
+            question_data = {
+                "id": question.id,
+                "text": question.text,
+                "num": question.num,
+                "licence_type":  {
+                    'id': question.licence_type_id,
+                    'name': question.licence_type.name
+                },
+                "question_type": {
+                    'id': question.question_type_id,
+                    'name': question.question_type.name
+                },
+                "image": question.image,
+                "choices": [{"text": choice.text, "is_correct": choice.is_correct} for choice in question.choices]
+            }
+            result.append(question_data)
+
+        return result
+    
+    except Exception as e:
+        print(f"ERROR: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
