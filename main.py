@@ -238,17 +238,7 @@ async def get_licences(db: db_dependency):
 @app.get("/questions_only/")
 async def get_questions(db: db_dependency, id_licencia: int):
     try:
-        # questions = db.query(Question).filter(Question.licence_type_id == id_licencia)
-        questions = (
-            db.query(Question)
-            .options(
-                joinedload(Question.licence_type),
-                joinedload(Question.question_type),
-                joinedload(Question.choices)
-            )
-            .filter(Question.licence_type_id == id_licencia)
-            .all()
-        )
+        questions = db.query(Question).filter(Question.licence_type_id == id_licencia)
 
         result = []
         for question in questions.all():
