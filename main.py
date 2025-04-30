@@ -203,6 +203,7 @@ async def get_licences(db: db_dependency):
             .join(LicenceType)
             .filter(LicenceType.enable == True)
             .options(joinedload(Type.licences))  # optimiza la carga
+            .order_by(Type.id)
             .distinct()
             .all()
         )
