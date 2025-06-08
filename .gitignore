@@ -3,4 +3,4 @@ CLOUDINARY_CLOUD_NAME='dzrxvg49m'
 CLOUDINARY_API_KEY='197886943293869'
 CLOUDINARY_API_SECRET='Lqoel0qHanAH9INstvzen1qEZoI'
 DATABASE_URL="postgresql://postgres.hjqaqkziajtphrqvyyai:Lu1sg4m2z2o2o@aws-0-us-east-2.pooler.supabase.com:6543/postgres"
-entorno virtual = /env
+entorno virtual = /envANTSimulatorFront

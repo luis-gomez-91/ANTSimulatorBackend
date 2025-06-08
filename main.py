@@ -157,12 +157,16 @@ async def get_questions(db: db_dependency, id_licencia: int):
             "lastNum": num,
             "licencia": {
                 'id': id_licencia,
-                'name': licencia.name
+                'name': licencia.name,
+                'image': licencia.image,
+                'pdf': licencia.question_bank
             },
             "licencias": [
                 {
                     'id': x.id,
-                    'name': x.name
+                    'name': x.name,
+                    'image': x.image,
+                    'pdf': x.question_bank
                 } for x in licencias
             ],
             "tipo_preguntas": [
