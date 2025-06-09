@@ -9,6 +9,8 @@ from dotenv import load_dotenv
 import cloudinary
 from routers import versions, licences, questions
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 
 app = FastAPI()
 
@@ -19,12 +21,19 @@ origins = [
     "http://127.0.0.1:8000",
 ]
 
+app.add_middleware(HTTPSRedirectMiddleware)
+
+app.add_middleware(
+    TrustedHostMiddleware,
+    allowed_hosts=["*"]
+)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,          # Solo orígenes específicos
-    allow_credentials=True,         # Permitir cookies o autenticación (si se usan)
-    allow_methods=["*"],            # Permitir todos los métodos HTTP
-    allow_headers=["*"],            # Permitir todos los encabezados
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
 )
 
 load_dotenv()
