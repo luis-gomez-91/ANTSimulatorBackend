@@ -13,17 +13,18 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 
 origins = [
-    "https://luis-gomez-91.github.io", # ¡Tu URL de GitHub Pages!
-    "http://localhost:8000",             # Para desarrollo local (si sigues usando 8000)
-    "http://127.0.0.1:8000",             # Para desarrollo local
+    "https://luis-gomez-91.github.io",        # GitHub Pages sin www
+    "https://www.luis-gomez-91.github.io",    # GitHub Pages con www (por si acaso)
+    "http://localhost:8000",                  # Para desarrollo local
+    "http://127.0.0.1:8000",
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,          # Lista de orígenes permitidos
-    allow_credentials=True,         # Permitir cookies/credenciales (si las usas)
-    allow_methods=["*"],            # Permitir todos los métodos (GET, POST, PUT, DELETE, etc.)
-    allow_headers=["*"],            # Permitir todas las cabeceras
+    allow_origins=origins,          # Solo orígenes específicos
+    allow_credentials=True,         # Permitir cookies o autenticación (si se usan)
+    allow_methods=["*"],            # Permitir todos los métodos HTTP
+    allow_headers=["*"],            # Permitir todos los encabezados
 )
 
 load_dotenv()
