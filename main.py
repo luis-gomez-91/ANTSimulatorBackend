@@ -13,7 +13,7 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 
 origins = [
-    "https://luis-gomez-91.github.io/ant-simulator-admin/", # ¡Tu URL de GitHub Pages!
+    "https://luis-gomez-91.github.io", # ¡Tu URL de GitHub Pages!
     "http://localhost:8000",             # Para desarrollo local (si sigues usando 8000)
     "http://127.0.0.1:8000",             # Para desarrollo local
 ]
