@@ -10,7 +10,7 @@ import cloudinary
 from routers import versions, licences, questions
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
+# from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 
 app = FastAPI()
 
@@ -21,7 +21,7 @@ origins = [
     "http://127.0.0.1:8000",
 ]
 
-app.add_middleware(HTTPSRedirectMiddleware)
+# app.add_middleware(HTTPSRedirectMiddleware)
 
 app.add_middleware(
     TrustedHostMiddleware,
