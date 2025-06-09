@@ -21,7 +21,7 @@ origins = [
     "http://127.0.0.1:8000",
 ]
 
-app.add_middleware(HTTPSRedirectMiddleware)
+# app.add_middleware(HTTPSRedirectMiddleware)
 
 app.add_middleware(
     TrustedHostMiddleware,
